@@ -10,7 +10,8 @@
     "url": "https://github.com/ruudverheijden/node-p1-storage.git"
   },
   "dependencies": {
-    "p1-reader": "1.3.1"
+    "p1-reader": "1.3.1",
+    "sqlite3": "3.1.8"
   },
   "devDependencies": {
     "jasmine": "^2.5.3"
