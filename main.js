@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const P1Reader = require('p1-reader');
 
 const config = require('./config/config.json');
-const db = require('./lib/create')();
+const database = require('./lib/database');
 
 const readerConfig = {
     emulator: true,
@@ -26,24 +26,15 @@ p1Reader.on('reading', function(data) {
     console.log('Reading received: currently consuming ' + data.electricity.received.actual.reading + data.electricity.received.actual.unit);
 
     if (data.timestamp && data.electricity.received.actual.reading) {
-        db.run(
-            `INSERT INTO readings_electricity (
-            datetime, received_actual, received_1, received_2, delivered_actual, delivered_1, delivered_2
-            )
-            VALUES (
-            "${data.timestamp}",
-            ${data.electricity.received.actual.reading},
-            ${data.electricity.received.tariff1.reading},
-            ${data.electricity.received.tariff2.reading},
-            ${data.electricity.delivered.actual.reading},
-            ${data.electricity.delivered.tariff1.reading},
-            ${data.electricity.delivered.tariff2.reading}
-            )`
-            , function (err) {
-                if (err) {
-                    console.error('Failed storing electricity reading to "readings_electricity" table: ' + err);
-                }
-            });
+        database.storeElectricityReading(
+            data.timestamp,
+            data.electricity.received.actual.reading,
+            data.electricity.received.tariff1.reading,
+            data.electricity.received.tariff2.reading,
+            data.electricity.delivered.actual.reading,
+            data.electricity.delivered.tariff1.reading,
+            data.electricity.delivered.tariff2.reading
+        );
     }
 
 });
