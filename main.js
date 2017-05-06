@@ -1,8 +1,9 @@
-const sqlite3 = require('sqlite3').verbose();
 const P1Reader = require('p1-reader');
 
 const config = require('./config/config.json');
 const database = require('./lib/database');
+const store = require('./lib/store')(database);
+const aggregate = require('./lib/aggregate')(database);
 
 const readerConfig = {
     emulator: true,
@@ -26,7 +27,7 @@ p1Reader.on('reading', function(data) {
     console.log('Reading received: currently consuming ' + data.electricity.received.actual.reading + data.electricity.received.actual.unit);
 
     if (data.timestamp && data.electricity.received.actual.reading) {
-        database.storeElectricityReading(
+        store.storeElectricityReading(
             data.timestamp,
             data.electricity.received.actual.reading,
             data.electricity.received.tariff1.reading,
@@ -46,6 +47,9 @@ p1Reader.on('error', function(error) {
 p1Reader.on('close', function() {
     console.log('Connection closed');
 });
+
+// Aggregate data on interval
+setInterval(aggregate.aggregate, config.aggregationInterval);
 
 // Handle all uncaught errors without crashing
 process.on('uncaughtException', function(error) {

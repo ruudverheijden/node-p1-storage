@@ -1,6 +1,6 @@
 {
     "databaseName": "p1-storage",
     "electricityTableName": "readings_electricity",
-    "gasTableName": "readings_gas"
-
+    "gasTableName": "readings_gas",
+    "aggregationInterval": 5000
 }
